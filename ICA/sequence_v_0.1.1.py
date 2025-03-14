@@ -20,7 +20,7 @@ def counter (seq):
             count[codon] += 1
         i += 3
     return (count)
-
+'''
 def max_count (seq):
     count = counter(seq)
     a = count.keys(0)
@@ -43,8 +43,19 @@ def max_count (seq):
         else:
             max_count_res[max_pos] += 1
     return (max_count_res) #This part has problem, the dictionary can't work, maybe change to two-dimensional list can fix!
+'''
+def max_count_2 (seq):
+    count = counter(seq)
+    key = list(count.keys())
+    val = list(count.values())
+    max_val = max(val)
+    max_key =[]
+    for i in range (len(key)):
+        if val[i] == max_val:
+            max_key.append(key[i])
+    return(max_key, max_val)
 
 seq = input("Inputing your sequence:")
-max_count_res = max_count (seq)
-for i in max_count_res.keys():
-    print(i, "is the maximum, with", max_count_res[i], "of its kind")
+max_key_list, max_val = max_count_2 (seq)
+for i in range (len(max_key_list)):
+    print(max_key_list[i], "is the maximum, with", max_val, "of its kind")
