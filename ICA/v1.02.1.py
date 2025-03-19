@@ -18,15 +18,44 @@ def counter(seq):
     while i + 3 <= leng and seq[i:i+3] not in end:  
         codon = seq[i:i+3]  
         count[codon] = count.get(codon, 0) + 1  
-        i += 3  
+        i += 3 
+    #print(count) 
     return count  
 
+def trans_ami(seq):
+    count = counter(seq)
+    trans_ami = {}
+    codon_amino_acid = [("UUU", "Phe"),("UUC", "Phe"),("UUA", "Leu"),("UUG", "Leu"),("CUU", "Leu"),("CUC", "Leu"),("CUA", "Leu"),("CUG", "Leu"),("AUU", "Ile"),  
+    ("AUC", "Ile"),("AUA", "Ile"),("AUG", "Met"),("GUU", "Val"),("GUC", "Val"),("GUA", "Val"),("GUG", "Val"),("UCU", "Ser"),("UCC", "Ser"),("UCA", "Ser"),("UCG", "Ser"),  
+    ("CCU", "Pro"),("CCC", "Pro"),("CCA", "Pro"),("CCG", "Pro"),("ACU", "Thr"),("ACC", "Thr"),("ACA", "Thr"),("ACG", "Thr"),("GCU", "Ala"),("GCC", "Ala"),("GCA", "Ala"),
+    ("GCG", "Ala"),("UAU", "Tyr"),("UAC", "Tyr"),("UAA", "Stop"),("UAG", "Stop"),("CAU", "His"),("CAC", "His"),("CAA", "Gln"),("CAG", "Gln"),("AAU", "Asn"),("AAC", "Asn"),  
+    ("AAA", "Lys"),("AAG", "Lys"),("GAU", "Asp"),("GAC", "Asp"),("GAA", "Glu"),("GAG", "Glu"),("UGU", "Cys"),("UGC", "Cys"),("UGA", "Stop"),("UGG", "Trp"),("CGU", "Arg"),  
+    ("CGC", "Arg"),("CGA", "Arg"),("CGG", "Arg"),("AGU", "Ser"),("AGC", "Ser"),("AGA", "Arg"),("AGG", "Arg"),("GGU", "Gly"),("GGC", "Gly"),("GGA", "Gly"),("GGG", "Gly")]
+    for codon in count.keys():
+        for codon2, amino_acid in codon_amino_acid:
+            if codon == codon2 :
+                if not amino_acid in trans_ami.keys():
+                    trans_ami[amino_acid] = count[codon]
+                else:
+                    trans_ami[amino_acid] += count[codon]
+    #print(trans_ami)
+    return(trans_ami)
+
 def max_count(seq):  
-    count = counter(seq)  
-    if not count:  
-        return {}  
-    max_codon = max(count.items(), key=lambda item: item[1])  
+    count = counter(seq)
+     
+ 
+    max_codon = max(count.items(), key=lambda item: item[1])
+      
     return {max_codon[0]: max_codon[1]}
+
+def max_count_amino(seq):  
+    
+    ami = trans_ami(seq)  
+     
+    
+    max_amino = max(ami.items(), key=lambda item: item[1])   
+    return {max_amino[0]: max_amino[1]}
 
 def max_ami(i):
     codon_amino_acid = [("UUU", "Phe"),("UUC", "Phe"),("UUA", "Leu"),("UUG", "Leu"),("CUU", "Leu"),("CUC", "Leu"),("CUA", "Leu"),("CUG", "Leu"),("AUU", "Ile"),  
@@ -37,27 +66,52 @@ def max_ami(i):
     ("CGC", "Arg"),("CGA", "Arg"),("CGG", "Arg"),("AGU", "Ser"),("AGC", "Ser"),("AGA", "Arg"),("AGG", "Arg"),("GGU", "Gly"),("GGC", "Gly"),("GGA", "Gly"),("GGG", "Gly")]
     for codon, amino_acid in codon_amino_acid:
         if codon == i :
-            print (f"the amino acid that coden {codon} translates is {amino_acid}.")
-            return 
+            return(f"The amino acid that coden {codon} translates is {amino_acid}.")
+            
 
 def plot(seq):
-    fig, axs = plt.subplots(1,2,figsize = (10,5))
-    frequences=list(counter(seq).values())
-    codon_index=list(counter(seq).keys())
+    fig, axs = plt.subplots(2,1,figsize = (8,8),gridspec_kw={'height_ratios': [6, 1]})
+    frequences=list(trans_ami(seq).values())
+    codon_index=list(trans_ami(seq).keys())
     
-    axs[0].pie(frequences, labels=codon_index, autopct='%.1f%%' ,startangle=140)
+    wedges, texts, autotexts = axs[0].pie(frequences, labels=codon_index, autopct='%.1f%%' ,
+               startangle=160,
+               textprops={'fontsize': 12, 'weight': 'bold'},
+               pctdistance=0.8
+            )  # Adjust distance of percentage text toward the center)
     axs[0].set_title("the frequence of each codon")
+ # Adjust rotation for each percentage label
+    for wedge, autotext in zip(wedges, autotexts):
+    # Compute the angle of the wedge's center
+        angle = (wedge.theta1 + wedge.theta2) / 2
+
+    # Make sure the labels on the left half are rotated correctly
+        if  angle > 180 :
+            rotation = angle-180  # For angles > 180, rotate back to keep text upright
+        else:
+            rotation = 0  
+        autotext.set_rotation(rotation)
+    axs[1].axis('off')
+    max_count_res = max_count(seq)
+    max_count_ami = max_count_amino(seq)
+    res = []  
+    for i in max_count_res.keys():  
+        #print(i, "is the maximum, with", max_count_res[i], "of its kind.")
+        res.append(str(f"Codon {i} is the maximum, with {max_count_res[i]} of its kind."))
+        res.append(max_ami(i))
+    for i in max_count_ami.keys():  
+        #print(i, "is the maximum, with", max_count_res[i], "of its kind.")
+        res.append(str(f"Amino acid {i} is the maximum, with {max_count_ami[i]} of its kind."))
     
-    
-    
-    axs[1].bar(codon_index, frequences)
-    axs[1].set_title("the frequence of each codon ")
-    plt.xticks(codon_index, rotation = 90)
-    plt.xlabel("codens")
-    plt.ylabel("frequences(%)")
+
+    # Add text in the lower subplot
+    commentary = "\n".join(res)
+    axs[1].text(0.5, 0.5, commentary, ha='center', va='center', fontsize=12, wrap=True)
+
+    plt.get_current_fig_manager().full_screen_toggle()
     plt.tight_layout()
     plt.show()
-
+    return()
 def align(seq1, seq2, match_score=1, gap_penalty=-1, mismatch_penalty=-1):
     # 创建评分矩阵
     n = len(seq1) + 1
@@ -117,10 +171,10 @@ def mode_choose(stri):
     if "1" in stri:
         print("Welcome to codon counter!")
         seq = input("Inputting your sequence: ")  
-        max_count_res = max_count(seq)  
-        for i in max_count_res.keys():  
-            print(i, "is the maximum, with", max_count_res[i], "of its kind.")
-        max_ami(i)
+        #max_count_res = max_count(seq)  
+        #for i in max_count_res.keys():  
+            #print(i, "is the maximum, with", max_count_res[i], "of its kind.")
+        #max_ami(i)
         #print(counter(seq))
         plot(seq)
         return()
@@ -138,7 +192,6 @@ def mode_choose(stri):
 print("Please choose your mode: 1, Codon counter(default); 2, Sequence alignment(test). What's the mode you choose:", end="")
 stri = input()
 mode_choose(stri)
-
 
 '''e.g to input:AUGGCCGAGCUGCGGAAGUACUUCAAGAUCGUCGGCAUCAUGCGGCGCAAGAAGGCACCCGGGUGGUGGCCGAGCUGCGGAAGUACUUCAAGAUCGUCGGCAUCAUGCGGCGCAAGAAGGCACCCGGGUGGUGGCCGAGCUGCGGAAGUACUUCAAGAUCGUCGGCAUCAUGCGGCGCAAGAAGGCACCCGGGUGGUGGCCGAGCUGCGGAAGUACUUCAAGAUCGUCGGCAUCAUGCGGCGCAAGAAGGCACCCGGGUGGUGGCCGAGCUGCGGAAGUACUUCAAGAUCGUCGGCAUCAUGCGGCGCAAGAAGGCACCCGGGUGGUGGCCGAGCUGCGGAAGUACUUCAAGAUCGUCGGCAUCAUGCGGCGCAAGAAGGCACCCGGGUGGUGGCCGAGCUGCGGAAGUACUUCAAGAUCGUCGGCAUCAUGCGGCGCAAGAAGGCACCCGGGUGGUGGCCGAGCUGCGGAAGUACUUCAAGAUCGUCGGCAUCAUGCGGCGCAAGAAGGCACCCGGGUGGUGGCCGAGCUGCGGAAGUACUUCAAGAUCGUCGGCAUCAUGCGGCGCAAGAAGGCACCCGGGUGGUGGCCGAGCUGCGGAAGUACUUCAAGAUCGUCGGCAUCAUGCGGCGCAAGAAGGCACCCGGGUGGUGGCCGAGCUGCGGAAGUACUUCAAGAUCGUCGGCAUCAUGCGGCGCAAGAAGGCACCCGGGUGGUGGCCGAGCUGCGGAAGUACUUCAAGAUCGUCGGCAUCAUGCGGCGCAAGAAGGCACCCGGGUGGUGGCCGAGCUGCGGAAGUACUUCAAGAUCGUCGGCAUCAUGCGGCGCAAGAAGGCACCCGGGUG
 
