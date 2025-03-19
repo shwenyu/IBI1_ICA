@@ -128,7 +128,7 @@ def mode_choose(stri):
         print("Welcome to Sequence Alignment(test version)!")
         seq1 = input("The first sequence is:")
         seq2 = input("The second sequence is:")
-        algin(seq1, seq2)
+        align(seq1, seq2)
         al_seq1, al_seq2, score = align(seq1, seq2)
         print("Aligned Sequence 1:", al_seq1)
         print("Aligned Sequence 2:", al_seq2)
