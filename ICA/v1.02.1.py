@@ -58,6 +58,7 @@ def max_count_amino(seq):
     return {max_amino[0]: max_amino[1]}
 
 def max_ami(i):
+    count_amino = {}
     codon_amino_acid = [("UUU", "Phe"),("UUC", "Phe"),("UUA", "Leu"),("UUG", "Leu"),("CUU", "Leu"),("CUC", "Leu"),("CUA", "Leu"),("CUG", "Leu"),("AUU", "Ile"),  
     ("AUC", "Ile"),("AUA", "Ile"),("AUG", "Met"),("GUU", "Val"),("GUC", "Val"),("GUA", "Val"),("GUG", "Val"),("UCU", "Ser"),("UCC", "Ser"),("UCA", "Ser"),("UCG", "Ser"),  
     ("CCU", "Pro"),("CCC", "Pro"),("CCA", "Pro"),("CCG", "Pro"),("ACU", "Thr"),("ACC", "Thr"),("ACA", "Thr"),("ACG", "Thr"),("GCU", "Ala"),("GCC", "Ala"),("GCA", "Ala"),
@@ -112,6 +113,7 @@ def plot(seq):
     plt.tight_layout()
     plt.show()
     return()
+
 def align(seq1, seq2, match_score=1, gap_penalty=-1, mismatch_penalty=-1):
     # 创建评分矩阵
     n = len(seq1) + 1
