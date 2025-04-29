@@ -123,10 +123,12 @@ def plot_amino_acid_frequencies(mrna_sequence):
     labels = amino_acid_counts.keys()
     sizes = amino_acid_counts.values()
     
-    plt.figure(figsize=(8, 8))
-    plt.pie(sizes, labels=labels, autopct='%1.1f%%', pctdistance=0.8, startangle=160, colors=plt.cm.tab20.colors)
-    plt.title('Frequency Distribution of Encoded Amino Acids')
-    plt.axis('equal')  
+    plt.figure(figsize=(12, 8),dpi=100)
+    plt.pie(sizes, labels=labels, autopct='%1.1f%%', pctdistance=0.8, startangle=160, colors=plt.cm.tab20.colors,textprops={"weight":"bold"})
+    plt.suptitle('Frequency Distribution of Encoded Amino Acids', fontsize=16, fontweight='bold')
+    plt.title(f'most frequent code is {result[0]}, time is {result[1]}\nmost frequent amino acid: {result[0]}, occur {result[1]} times')
+    plt.axis('equal') 
+    plt.tight_layout() 
     plt.show()
 
 plot_amino_acid_frequencies(mrna_sequence)
