@@ -1,18 +1,18 @@
 import numpy as np
 
 def needleman_wunsch(seq1, seq2, match_score=1, gap_penalty=-1, mismatch_penalty=-1):
-    # 创建评分矩阵
+    # Create the scoring matrix
     n = len(seq1) + 1
     m = len(seq2) + 1
     score_matrix = np.zeros((n, m), dtype=int)
     
-    # 初始化边界条件（gap penalties）
+    # Initialize boundary conditions (gap penalties)
     for i in range(n):
         score_matrix[i][0] = i * gap_penalty
     for j in range(m):
         score_matrix[0][j] = j * gap_penalty
     
-    # 填充评分矩阵
+    # Fill the scoring matrix
     for i in range(1, n):
         for j in range(1, m):
             match = score_matrix[i-1][j-1] + (match_score if seq1[i-1] == seq2[j-1] else mismatch_penalty)
@@ -20,16 +20,16 @@ def needleman_wunsch(seq1, seq2, match_score=1, gap_penalty=-1, mismatch_penalty
             insert = score_matrix[i][j-1] + gap_penalty
             score_matrix[i][j] = max(match, delete, insert)
     
-    # 递归回溯所有可能的最优路径
+    # Recursively traceback all possible optimal paths
     def traceback(i, j, aligned_seq1, aligned_seq2):
         if i == 0 and j == 0:
-            # 当到达矩阵的左上角时，返回当前路径
+            # When reaching the top-left corner of the matrix, return the current path
             return [(aligned_seq1, aligned_seq2)]
         
         alignments = []
         current_score = score_matrix[i][j]
         
-        # 检查当前格子来决定回溯的路径
+        # Check the current cell to decide the traceback path
         if i > 0 and current_score == score_matrix[i-1][j] + gap_penalty:
             alignments += traceback(i-1, j, seq1[i-1] + aligned_seq1, '-' + aligned_seq2)
         
@@ -42,18 +42,20 @@ def needleman_wunsch(seq1, seq2, match_score=1, gap_penalty=-1, mismatch_penalty
         
         return alignments
 
-    # 获取所有比对结果
+    # Get all alignment results
     alignments = traceback(n-1, m-1, "", "")
     
-    # 返回最优比对结果及所有路径
+    # Return the optimal alignment results and all paths
     return alignments, score_matrix[n-1][m-1]
 
-# 示例
-seq1 = "GATTACA"
-seq2 = "GCATGCU"
+# Input sequences dynamically
+seq1 = input("Enter the first sequence: ").strip().upper()
+seq2 = input("Enter the second sequence: ").strip().upper()
+
+# Perform alignment
 alignments, score = needleman_wunsch(seq1, seq2)
 
-# 打印结果
+# Print results
 print(f"Alignment Score: {score}")
 for idx, (aligned_seq1, aligned_seq2) in enumerate(alignments, 1):
     print(f"Alignment {idx}:")
